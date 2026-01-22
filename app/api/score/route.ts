@@ -49,6 +49,9 @@ export async function POST(req: NextRequest) {
         temperature: 0.2,
       });
       notes = res.object;
+      notes.meta = notes.meta ?? {};
+      notes.meta.confidenceNote = notes.meta.confidenceNote || "Rationale generated with AI (Gemini).";
+
     } catch (err) {
       // Gemini failed (bad key, quota, transient). Still return deterministic output.
       notes = {

@@ -1,3 +1,4 @@
+/* stylelint-disable-next-line at-rule-no-unknown */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -72,6 +73,8 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Segoe UI Variable", Roboto,
+      "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
   }
 }

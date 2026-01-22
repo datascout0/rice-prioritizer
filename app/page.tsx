@@ -158,6 +158,10 @@ export default function Page() {
   const hasAnyTitled = useMemo(() => items.some((i) => i.title.trim().length > 0), [items]);
   const rankedLocal = useMemo(() => rankItems(items.filter((i) => i.title.trim().length > 0), timeframe), [items, timeframe]);
   const isScored = Boolean(result);
+  const aiRationaleAvailable =
+  !!result?.meta?.confidenceNote &&
+  !result.meta.confidenceNote.toLowerCase().includes("unavailable");
+
 
   function updateItem(idx: number, patch: Partial<BacklogInputItem>) {
     setItems((prev) => prev.map((it, i) => (i === idx ? ({ ...it, ...patch } as BacklogInputItem) : it)));
@@ -351,7 +355,7 @@ export default function Page() {
       <div className="mx-auto max-w-6xl p-4 sm:p-6">
         <div className="mb-5 text-center">
           <h1 className="text-3xl font-semibold">
-  <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+  <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text font-bold text-transparent">
     RICE AI Prioritizer
   </span>
 </h1>
@@ -704,12 +708,17 @@ export default function Page() {
               </TabsList>
 
               <TabsContent value="ranked" className="space-y-3">
-                <Card className={isScored ? "border-green-200 bg-green-50" : ""}>
+                <Card className={isScored && aiRationaleAvailable ? "border-green-200 bg-green-50" : ""}>
+
                   <CardHeader>
                     <CardTitle className="text-base">{isScored ? "Ranked backlog" : "Preview ranked backlog"}</CardTitle>
                     <CardDescription className="text-xs sm:text-sm">
-                      {isScored ? "Rationale is generated with AI." : "Preview = deterministic RICE math on your inputs."}
-                    </CardDescription>
+                      {!isScored
+                        ? "Preview = deterministic RICE math on your inputs."
+                        : aiRationaleAvailable
+                        ? "Rationale is generated with AI."
+                        : "AI rationale unavailable. Showing deterministic scoring output."}
+                    </CardDescription>  
                   </CardHeader>
                   <CardContent className="space-y-3">
                     {!hasAnyTitled ? (
@@ -776,7 +785,8 @@ export default function Page() {
               </TabsContent>
 
               <TabsContent value="breakdown" className="space-y-3">
-                <Card className={isScored ? "border-green-200 bg-green-50" : ""}>
+                <Card className={isScored && aiRationaleAvailable ? "border-green-200 bg-green-50" : ""}>
+
                   <CardHeader>
                     <CardTitle className="text-base">{isScored ? "Score breakdown" : "Preview score breakdown"}</CardTitle>
                     <CardDescription className="text-xs sm:text-sm">See the inputs behind each rank.</CardDescription>
